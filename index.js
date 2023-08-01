@@ -38,11 +38,24 @@ const authentication = (request, response, next) => {
       if (error) {
         response.status(401).send("Invalid Access Token");
       } else {
+        request.username = payload.username;
         next();
       }
     });
   }
 };
+
+// Profile API
+app.get("/profile/", authentication, async (request, response) => {
+  const { username } = request;
+  const userQuery = `SELECT *
+  FROM user
+  WHERE
+  username = '${username}'`;
+  const userdetails = await db.get(userQuery);
+  response.send(userdetails);
+  console.log(username);
+});
 
 // Get Books API
 app.get("/books/", authentication, async (request, response) => {
